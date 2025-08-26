@@ -271,7 +271,7 @@ export function DataSourceDialog({ isOpen, onClose, editingSource }: DataSourceD
                   <Input
                     id="url"
                     type="url"
-                    placeholder={`${process.env.NEXT_PUBLIC_APP_URL}/api/exemple`}
+                    placeholder={`${process.env.NEXT_PUBLIC_APP_URL}/api/example`}
                     value={url}
                     onChange={(e) => setUrl(e.target.value)}
                     required
@@ -279,12 +279,12 @@ export function DataSourceDialog({ isOpen, onClose, editingSource }: DataSourceD
                   <span className="text-sm text-muted-foreground">
                     You can use
                     <a
-                      href={`${process.env.NEXT_PUBLIC_APP_URL}/api/exemple`}
+                      href={`${process.env.NEXT_PUBLIC_APP_URL}/api/example`}
                       target="_blank"
                       rel="noopener noreferrer"
                       className="text-primary hover:underline mx-1"
                     >
-                      {process.env.NEXT_PUBLIC_APP_URL}/api/exemple
+                      {process.env.NEXT_PUBLIC_APP_URL}/api/example
                     </a>
                     to test.
                   </span>

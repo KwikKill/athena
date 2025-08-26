@@ -71,40 +71,30 @@ export function DashboardBuilder({ dashboard: initialDashboard, dataSources, isO
   const [autoRefreshEnabled, setAutoRefreshEnabled] = useState(false)
   const [refreshInterval, setRefreshInterval] = useState(30000) // 30 seconds
   const [editingWidget, setEditingWidget] = useState<any>(null)
-
-  const generateLayout = useCallback((): Layout[] => {
-    return dashboard.dashboard_widgets.map((widget, index) => ({
-      i: widget.id,
-      x: widget.position_x ?? (index % 4) * 3,
-      y: widget.position_y ?? Math.floor(index / 4) * 2,
-      w: widget.width ?? 3,
-      h: widget.height ?? 2,
-      minW: 2,
-      minH: 1,
-    }))
-  }, [dashboard.dashboard_widgets])
-
-  const [layouts, setLayouts] = useState<{ [key: string]: Layout[] }>(() => {
-    const initialLayout = generateLayout()
-    return {
-      lg: initialLayout,
-      md: initialLayout,
-      sm: initialLayout,
-      xs: initialLayout,
-      xxs: initialLayout,
-    }
-  })
   const widgetRefreshFunctions = useRef<{ [widgetId: string]: () => void }>({})
   const router = useRouter()
   const { toast } = useToast()
+
+  const registerWidgetRefresh = useCallback((widgetId: string, refreshFn: () => void) => {
+    widgetRefreshFunctions.current[widgetId] = refreshFn
+  }, [])
+
+  const unregisterWidgetRefresh = useCallback((widgetId: string) => {
+    delete widgetRefreshFunctions.current[widgetId]
+  }, [])
 
   const refreshAllWidgets = useCallback(async () => {
     Object.values(widgetRefreshFunctions.current).forEach((refreshFn) => {
       if (refreshFn) refreshFn()
     })
+  }, [])
 
-    router.refresh()
-  }, [router])
+  const refreshSingleWidget = useCallback(async (widgetId: string) => {
+    const refreshFn = widgetRefreshFunctions.current[widgetId]
+    if (refreshFn) {
+      refreshFn()
+    }
+  }, [])
 
   const { isRefreshing, lastRefresh, manualRefresh } = useAutoRefresh({
     enabled: autoRefreshEnabled,
@@ -140,14 +130,6 @@ export function DashboardBuilder({ dashboard: initialDashboard, dataSources, isO
     [isEditMode, dashboard.dashboard_widgets],
   )
 
-  const registerWidgetRefresh = useCallback((widgetId: string, refreshFn: () => void) => {
-    widgetRefreshFunctions.current[widgetId] = refreshFn
-  }, [])
-
-  const unregisterWidgetRefresh = useCallback((widgetId: string) => {
-    delete widgetRefreshFunctions.current[widgetId]
-  }, [])
-
   const handleSave = async () => {
     setIsSaving(true)
     try {
@@ -168,7 +150,6 @@ export function DashboardBuilder({ dashboard: initialDashboard, dataSources, isO
         ),
       )
 
-      router.refresh()
       toast({
         title: "Dashboard Saved",
         description: "Your dashboard changes have been saved successfully.",
@@ -207,7 +188,7 @@ export function DashboardBuilder({ dashboard: initialDashboard, dataSources, isO
         ...prev,
         dashboard_widgets: prev.dashboard_widgets.filter((w) => w.id !== widgetId),
       }))
-      router.refresh()
+
       toast({
         title: "Widget Deleted",
         description: "Widget has been removed from the dashboard.",
@@ -250,28 +231,63 @@ export function DashboardBuilder({ dashboard: initialDashboard, dataSources, isO
       dashboard_widgets: prev.dashboard_widgets.map((w) => (w.id === updatedWidget.id ? updatedWidget : w)),
     }))
     setEditingWidget(null)
-    router.refresh()
+
+    setTimeout(() => {
+      refreshSingleWidget(updatedWidget.id)
+    }, 100) // Small delay to ensure state update is complete
+
+    toast({
+      title: "Widget Updated",
+      description: "Widget has been updated successfully.",
+    })
   }
+
+  const generateLayout = useCallback((): Layout[] => {
+    return dashboard.dashboard_widgets.map((widget, index) => ({
+      i: widget.id,
+      x: widget.position_x ?? (index % 4) * 3,
+      y: widget.position_y ?? Math.floor(index / 4) * 2,
+      w: widget.width ?? 3,
+      h: widget.height ?? 2,
+      minW: 1, // Reduced minimum width for mobile
+      minH: 1,
+    }))
+  }, [dashboard.dashboard_widgets])
+
+  const [layouts, setLayouts] = useState<{ [key: string]: Layout[] }>(() => {
+    const initialLayout = generateLayout()
+    return {
+      lg: initialLayout,
+      md: initialLayout,
+      sm: initialLayout.map((item) => ({ ...item, w: Math.min(item.w, 6), x: item.x % 6 })), // Constrain width for small screens
+      xs: initialLayout.map((item) => ({ ...item, w: Math.min(item.w, 4), x: item.x % 4 })), // Further constrain for extra small
+      xxs: initialLayout.map((item) => ({ ...item, w: 2, x: (item.x % 2) * 2 })), // Force 2-column layout on mobile
+    }
+  })
 
   return (
     <div className="flex flex-col min-h-full">
       <div className="border-b bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/60">
-        <div className="mx-4 flex min-h-16 py-2 items-center justify-between md:flex-row flex-col">
-          <div className="flex items-center gap-4">
+        <div className="mx-2 sm:mx-4 flex min-h-16 py-2 items-center justify-between">
+          <div className="flex items-center gap-2 sm:gap-4 min-w-0 flex-1">
             <Link href="/dashboard">
-              <Button variant="ghost" size="sm" className="gap-2">
+              <Button variant="ghost" size="sm" className="gap-2 flex-shrink-0">
                 <ArrowLeft className="h-4 w-4" />
-                Back
+                <span className="hidden sm:inline">Back</span>
               </Button>
             </Link>
-            <div>
-              <h1 className="text-xl font-semibold">{dashboard.name}</h1>
-              {dashboard.description && <p className="text-sm text-muted-foreground">{dashboard.description}</p>}
+            <div className="min-w-0 flex-1">
+              <h1 className="text-lg sm:text-xl font-semibold truncate">{dashboard.name}</h1>
+              {dashboard.description && (
+                <p className="text-xs sm:text-sm text-muted-foreground truncate hidden sm:block">
+                  {dashboard.description}
+                </p>
+              )}
             </div>
           </div>
 
-          <div className="flex items-center gap-2 flex-col md:flex-row">
-            <div className="flex flex-row items-end gap-1 mr-2">
+          <div className="flex items-center gap-1 sm:gap-2 flex-shrink-0">
+            <div className="hidden sm:flex flex-row items-end gap-1 mr-2">
               {lastRefresh && (
                 <div className="text-xs text-muted-foreground">Last updated: {lastRefresh.toLocaleTimeString()}</div>
               )}
@@ -287,11 +303,11 @@ export function DashboardBuilder({ dashboard: initialDashboard, dataSources, isO
               )}
             </div>
 
-            <div className="flex flex-row items-end gap-1 mr-2">
+            <div className="flex items-center gap-1">
               {dashboard.is_public && (
-                <Badge variant="outline" className="gap-1">
+                <Badge variant="outline" className="gap-1 hidden sm:flex">
                   <Eye className="h-3 w-3" />
-                  Public
+                  <span className="hidden md:inline">Public</span>
                 </Badge>
               )}
 
@@ -300,10 +316,10 @@ export function DashboardBuilder({ dashboard: initialDashboard, dataSources, isO
                 size="sm"
                 onClick={manualRefresh}
                 disabled={isRefreshing}
-                className="gap-2 bg-transparent"
+                className="gap-1 sm:gap-2 bg-transparent"
               >
                 <RefreshCw className={`h-4 w-4 ${isRefreshing ? "animate-spin" : ""}`} />
-                Refresh
+                <span className="hidden sm:inline">Refresh</span>
               </Button>
 
               {isOwner && (
@@ -340,15 +356,20 @@ export function DashboardBuilder({ dashboard: initialDashboard, dataSources, isO
                     </DropdownMenuContent>
                   </DropdownMenu>
 
-                  <Button variant="outline" size="sm" onClick={() => setIsEditMode(!isEditMode)} className="gap-2">
+                  <Button
+                    variant="outline"
+                    size="sm"
+                    onClick={() => setIsEditMode(!isEditMode)}
+                    className="gap-1 sm:gap-2"
+                  >
                     {isEditMode ? <EyeOff className="h-4 w-4" /> : <Settings className="h-4 w-4" />}
-                    {isEditMode ? "View Mode" : "Edit Mode"}
+                    <span className="hidden sm:inline">{isEditMode ? "View" : "Edit"}</span>
                   </Button>
 
                   {isEditMode && (
-                    <Button size="sm" onClick={handleSave} disabled={isSaving} className="gap-2">
+                    <Button size="sm" onClick={handleSave} disabled={isSaving} className="gap-1 sm:gap-2">
                       <Save className="h-4 w-4" />
-                      {isSaving ? "Saving..." : "Save"}
+                      <span className="hidden sm:inline">{isSaving ? "Saving..." : "Save"}</span>
                     </Button>
                   )}
                 </>
@@ -358,17 +379,17 @@ export function DashboardBuilder({ dashboard: initialDashboard, dataSources, isO
         </div>
       </div>
 
-      <div className="flex-1 mx-4 py-6">
+      <div className="flex-1 mx-2 sm:mx-4 py-4 sm:py-6">
         {dashboard.dashboard_widgets.length === 0 ? (
           <Card className="border-dashed">
-            <CardContent className="flex flex-col items-center justify-center py-12">
+            <CardContent className="flex flex-col items-center justify-center py-8 sm:py-12">
               <div className="text-center space-y-4">
-                <div className="w-16 h-16 bg-primary/10 rounded-lg flex items-center justify-center mx-auto">
-                  <Plus className="h-8 w-8 text-primary" />
+                <div className="w-12 h-12 sm:w-16 sm:h-16 bg-primary/10 rounded-lg flex items-center justify-center mx-auto">
+                  <Plus className="h-6 w-6 sm:h-8 sm:w-8 text-primary" />
                 </div>
                 <div>
-                  <h3 className="text-lg font-semibold mb-2">Empty Dashboard</h3>
-                  <p className="text-muted-foreground max-w-sm">
+                  <h3 className="text-base sm:text-lg font-semibold mb-2">Empty Dashboard</h3>
+                  <p className="text-muted-foreground text-sm max-w-sm">
                     This dashboard doesn't have any widgets yet.
                     {isOwner ? " Start building by adding your first widget." : ""}
                   </p>
@@ -388,11 +409,11 @@ export function DashboardBuilder({ dashboard: initialDashboard, dataSources, isO
             layouts={layouts}
             onLayoutChange={handleLayoutChange}
             breakpoints={{ lg: 1200, md: 996, sm: 768, xs: 480, xxs: 0 }}
-            cols={{ lg: 12, md: 10, sm: 6, xs: 4, xxs: 2 }}
-            rowHeight={120}
+            cols={{ lg: 12, md: 10, sm: 6, xs: 4, xxs: 2 }} // Improved column distribution for mobile
+            rowHeight={120} // Reduced row height for better mobile fit
             isDraggable={isOwner && isEditMode}
             isResizable={isOwner && isEditMode}
-            margin={[16, 16]}
+            margin={[8, 8]}
             containerPadding={[0, 0]}
             useCSSTransforms={true}
             draggableCancel=".widget-interract"
@@ -414,10 +435,14 @@ export function DashboardBuilder({ dashboard: initialDashboard, dataSources, isO
         )}
 
         {isOwner && isEditMode && dashboard.dashboard_widgets.length > 0 && (
-          <div className="fixed bottom-8 right-8">
-            <Button size="lg" className="rounded-full shadow-lg gap-2" onClick={() => setShowWidgetDialog(true)}>
+          <div className="fixed bottom-4 right-4 sm:bottom-8 sm:right-8">
+            <Button
+              size="lg"
+              className="rounded-full shadow-lg gap-2 h-12 w-12 sm:h-auto sm:w-auto sm:px-4"
+              onClick={() => setShowWidgetDialog(true)}
+            >
               <Plus className="h-5 w-5" />
-              Add Widget
+              <span className="hidden sm:inline">Add Widget</span>
             </Button>
           </div>
         )}

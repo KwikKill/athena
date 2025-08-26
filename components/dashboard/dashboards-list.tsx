@@ -9,6 +9,8 @@ import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigge
 import { DashboardDialog } from "./dashboard-dialog"
 import { formatDistanceToNow } from "date-fns"
 import Link from "next/link"
+import { useRouter } from "next/navigation"
+import { useToast } from "@/hooks/use-toast"
 
 interface Dashboard {
   id: string
@@ -21,6 +23,7 @@ interface Dashboard {
   created_at: string
   updated_at: string
   dashboard_widgets: Array<{ count: number }>
+  layout_config?: any
 }
 
 interface DashboardsListProps {
@@ -31,6 +34,9 @@ interface DashboardsListProps {
 export function DashboardsList({ dashboards, publicDashboards }: DashboardsListProps) {
   const [isDialogOpen, setIsDialogOpen] = useState(false)
   const [editingDashboard, setEditingDashboard] = useState<Dashboard | null>(null)
+  const [isLoading, setIsLoading] = useState<string | null>(null)
+  const router = useRouter()
+  const { toast } = useToast()
 
   const handleEdit = (dashboard: Dashboard) => {
     setEditingDashboard(dashboard)
@@ -46,12 +52,82 @@ export function DashboardsList({ dashboards, publicDashboards }: DashboardsListP
     return dashboard.dashboard_widgets?.[0]?.count || 0
   }
 
-  const handleDuplicate = (dashboard: Dashboard) => {
-    // Implement duplication logic here
+  const handleDuplicate = async (dashboard: Dashboard) => {
+    setIsLoading(dashboard.id)
+    try {
+      const response = await fetch(`/api/dashboards/${dashboard.id}/duplicate`, {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+      })
+
+      const result = await response.json()
+
+      if (!response.ok) {
+        throw new Error(result.error || "Failed to duplicate dashboard")
+      }
+
+      toast({
+        title: "Dashboard duplicated",
+        description: `"${dashboard.name}" has been successfully duplicated.`,
+      })
+
+      router.refresh()
+    } catch (error) {
+      toast({
+        title: "Duplication failed",
+        description: error instanceof Error ? error.message : "Failed to duplicate dashboard",
+        variant: "destructive",
+      })
+    } finally {
+      setIsLoading(null)
+    }
   }
 
-  const handleExport = (dashboard: Dashboard) => {
-    // Implement export logic here
+  const handleExport = async (dashboard: Dashboard) => {
+    setIsLoading(dashboard.id)
+    try {
+      // Create export data structure
+      const exportData = {
+        dashboard: {
+          name: dashboard.name,
+          description: dashboard.description,
+          tags: dashboard.tags,
+          layout_config: dashboard.layout_config,
+          version: dashboard.version,
+        },
+        widgets: [], // Will be populated with widget data
+        exportedAt: new Date().toISOString(),
+        exportVersion: "1.0",
+      }
+
+      // Create and download the JSON file
+      const dataStr = JSON.stringify(exportData, null, 2)
+      const dataBlob = new Blob([dataStr], { type: "application/json" })
+      const url = URL.createObjectURL(dataBlob)
+
+      const link = document.createElement("a")
+      link.href = url
+      link.download = `${dashboard.name.replace(/[^a-z0-9]/gi, "_").toLowerCase()}_dashboard.json`
+      document.body.appendChild(link)
+      link.click()
+      document.body.removeChild(link)
+      URL.revokeObjectURL(url)
+
+      toast({
+        title: "Dashboard exported",
+        description: `"${dashboard.name}" has been exported successfully.`,
+      })
+    } catch (error) {
+      toast({
+        title: "Export failed",
+        description: error instanceof Error ? error.message : "Failed to export dashboard",
+        variant: "destructive",
+      })
+    } finally {
+      setIsLoading(null)
+    }
   }
 
   const handleDelete = (dashboardId: string) => {
@@ -105,6 +181,7 @@ export function DashboardsList({ dashboards, publicDashboards }: DashboardsListP
                         variant="ghost"
                         size="sm"
                         className="h-8 w-8 p-0 opacity-0 group-hover:opacity-100 transition-opacity"
+                        disabled={isLoading === dashboard.id}
                       >
                         <MoreHorizontal className="h-4 w-4" />
                       </Button>
@@ -120,13 +197,16 @@ export function DashboardsList({ dashboards, publicDashboards }: DashboardsListP
                         <Pencil className="mr-2 h-4 w-4" />
                         Edit
                       </DropdownMenuItem>
-                      <DropdownMenuItem onClick={() => handleDuplicate(dashboard)}>
+                      <DropdownMenuItem
+                        onClick={() => handleDuplicate(dashboard)}
+                        disabled={isLoading === dashboard.id}
+                      >
                         <Copy className="mr-2 h-4 w-4" />
-                        Duplicate
+                        {isLoading === dashboard.id ? "Duplicating..." : "Duplicate"}
                       </DropdownMenuItem>
-                      <DropdownMenuItem onClick={() => handleExport(dashboard)}>
+                      <DropdownMenuItem onClick={() => handleExport(dashboard)} disabled={isLoading === dashboard.id}>
                         <Download className="mr-2 h-4 w-4" />
-                        Export
+                        {isLoading === dashboard.id ? "Exporting..." : "Export"}
                       </DropdownMenuItem>
                       <DropdownMenuItem className="text-destructive" onClick={() => handleDelete(dashboard.id)}>
                         <Trash2 className="mr-2 h-4 w-4" />
@@ -222,6 +302,7 @@ export function DashboardsList({ dashboards, publicDashboards }: DashboardsListP
                         variant="ghost"
                         size="sm"
                         className="h-8 w-8 p-0 opacity-0 group-hover:opacity-100 transition-opacity"
+                        disabled={isLoading === dashboard.id}
                       >
                         <MoreHorizontal className="h-4 w-4" />
                       </Button>
@@ -233,13 +314,16 @@ export function DashboardsList({ dashboards, publicDashboards }: DashboardsListP
                           View
                         </Link>
                       </DropdownMenuItem>
-                      <DropdownMenuItem onClick={() => handleDuplicate(dashboard)}>
+                      <DropdownMenuItem
+                        onClick={() => handleDuplicate(dashboard)}
+                        disabled={isLoading === dashboard.id}
+                      >
                         <Copy className="mr-2 h-4 w-4" />
-                        Duplicate
+                        {isLoading === dashboard.id ? "Duplicating..." : "Duplicate"}
                       </DropdownMenuItem>
-                      <DropdownMenuItem onClick={() => handleExport(dashboard)}>
+                      <DropdownMenuItem onClick={() => handleExport(dashboard)} disabled={isLoading === dashboard.id}>
                         <Download className="mr-2 h-4 w-4" />
-                        Export
+                        {isLoading === dashboard.id ? "Exporting..." : "Export"}
                       </DropdownMenuItem>
                     </DropdownMenuContent>
                   </DropdownMenu>

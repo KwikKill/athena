@@ -64,9 +64,9 @@ export function WidgetRenderer({
   const renderWidgetContent = () => {
     if (loading) {
       return (
-        <div className="h-32 flex items-center justify-center">
+        <div className="h-24 sm:h-32 flex items-center justify-center">
           <div className="flex flex-col items-center gap-2">
-            <RefreshCw className="h-6 w-6 animate-spin text-muted-foreground" />
+            <RefreshCw className="h-4 w-4 sm:h-6 sm:w-6 animate-spin text-muted-foreground" />
             <span className="text-xs text-muted-foreground">Loading data...</span>
           </div>
         </div>
@@ -75,11 +75,11 @@ export function WidgetRenderer({
 
     if (error) {
       return (
-        <div className="h-32 flex items-center justify-center text-center p-4">
+        <div className="h-24 sm:h-32 flex items-center justify-center text-center p-2 sm:p-4">
           <div className="space-y-2">
-            <AlertCircle className="h-6 w-6 text-destructive mx-auto" />
-            <p className="text-sm text-destructive">Failed to load data</p>
-            <p className="text-xs text-muted-foreground">{error}</p>
+            <AlertCircle className="h-4 w-4 sm:h-6 sm:w-6 text-destructive mx-auto" />
+            <p className="text-xs sm:text-sm text-destructive">Failed to load data</p>
+            <p className="text-xs text-muted-foreground line-clamp-2">{error}</p>
             <Button size="sm" variant="outline" onClick={refresh}>
               <RefreshCw className="h-3 w-3 mr-1" />
               Retry
@@ -102,10 +102,12 @@ export function WidgetRenderer({
         return <IframeWidget config={widget.config} />
       default:
         return (
-          <div className="h-32 flex items-center justify-center">
+          <div className="h-24 sm:h-32 flex items-center justify-center">
             <div className="text-center">
-              <AlertCircle className="h-6 w-6 text-muted-foreground mx-auto mb-2" />
-              <span className="text-sm text-muted-foreground">Unknown widget type: {widget.widget_type}</span>
+              <AlertCircle className="h-4 w-4 sm:h-6 sm:w-6 text-muted-foreground mx-auto mb-2" />
+              <span className="text-xs sm:text-sm text-muted-foreground">
+                Unknown widget type: {widget.widget_type}
+              </span>
             </div>
           </div>
         )
@@ -114,10 +116,10 @@ export function WidgetRenderer({
 
   return (
     <Card
-      className={`relative group h-full widget-content ${widget.widget_type === "kpi" ? "py-0" : ""}`}
+      className={`relative group h-full widget-content overflow-hidden ${widget.widget_type === "kpi" ? "py-0" : ""}`}
     >
       {isEditMode && (
-        <div className="absolute top-2 left-2 opacity-0 group-hover:opacity-100 transition-opacity z-10">
+        <div className="absolute top-1 left-1 sm:top-2 sm:left-2 opacity-0 group-hover:opacity-100 transition-opacity z-10">
           <div className="widget-drag-handle p-1 rounded bg-background/80 backdrop-blur-sm border">
             <GripVertical className="h-3 w-3 text-muted-foreground" />
           </div>
@@ -125,13 +127,23 @@ export function WidgetRenderer({
       )}
 
       {isEditMode && (
-        <div className="widget-interract absolute top-2 right-2 opacity-0 group-hover:opacity-100 transition-opacity z-10">
+        <div className="widget-interract absolute top-1 right-1 sm:top-2 sm:right-2 opacity-0 group-hover:opacity-100 transition-opacity z-10">
           <div className="flex gap-1">
-            <Button size="sm" variant="secondary" className="h-7 w-7 p-0" onClick={() => onEdit?.(widget)}>
-              <Edit className="h-3 w-3" />
+            <Button
+              size="sm"
+              variant="secondary"
+              className="h-6 w-6 sm:h-7 sm:w-7 p-0"
+              onClick={() => onEdit?.(widget)}
+            >
+              <Edit className="h-2.5 w-2.5 sm:h-3 sm:w-3" />
             </Button>
-            <Button size="sm" variant="destructive" className="h-7 w-7 p-0" onClick={() => onDelete?.(widget.id)}>
-              <Trash2 className="h-3 w-3" />
+            <Button
+              size="sm"
+              variant="destructive"
+              className="h-6 w-6 sm:h-7 sm:w-7 p-0"
+              onClick={() => onDelete?.(widget.id)}
+            >
+              <Trash2 className="h-2.5 w-2.5 sm:h-3 sm:w-3" />
             </Button>
           </div>
         </div>
@@ -140,18 +152,18 @@ export function WidgetRenderer({
       {widget.widget_type !== "kpi" && (
         <CardHeader className="border-b">
           <div className="flex items-center justify-between">
-            <CardTitle className="text-base truncate pr-2">{widget.title}</CardTitle>
-            <div className="flex items-center gap-2 flex-shrink-0">
+            <CardTitle className="text-sm sm:text-base truncate pr-2">{widget.title}</CardTitle>
+            <div className="flex items-center gap-1 sm:gap-2 flex-shrink-0">
               <Badge variant="outline" className="text-xs">
                 {widget.widget_type}
               </Badge>
               {widget.config?.auto_refresh && (
-                <Badge variant="secondary" className="text-xs">
+                <Badge variant="secondary" className="text-xs hidden sm:inline-flex">
                   Auto
                 </Badge>
               )}
               {widget.config?.jquery_expression && (
-                <Badge variant="outline" className="text-xs bg-accent/10">
+                <Badge variant="outline" className="text-xs bg-accent/10 hidden sm:inline-flex">
                   Transform
                 </Badge>
               )}

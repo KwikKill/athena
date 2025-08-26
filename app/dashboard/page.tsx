@@ -33,6 +33,18 @@ export default async function DashboardPage() {
     .eq("user_id", user.id)
     .order("updated_at", { ascending: false })
 
+  // Fetch public dashboards
+  const { data: publicDashboards } = await supabase
+    .from("dashboards")
+    .select(`
+      *,
+      dashboard_widgets(count)
+    `)
+    .eq("is_public", true)
+    .neq("user_id", user.id)
+    .order("updated_at", { ascending: false })
+    .limit(5)
+
   return (
     <div className="flex flex-col min-h-screen bg-background">
       <DashboardHeader user={user} />
@@ -57,7 +69,7 @@ export default async function DashboardPage() {
             </TabsList>
 
             <TabsContent value="dashboards" className="space-y-6">
-              <DashboardsList dashboards={dashboards || []} />
+              <DashboardsList dashboards={dashboards || []} publicDashboards={publicDashboards || []} />
             </TabsContent>
 
             <TabsContent value="data-sources" className="space-y-6">

@@ -68,7 +68,7 @@ export default function SignupPage() {
               <Shield className="h-8 w-8" />
               <span className="text-2xl font-bold">Athena</span>
             </div>
-            <p className="text-sm text-muted-foreground text-center">Professional dashboard builder platform</p>
+            <p className="text-sm text-muted-foreground text-center">REST API Dashboard builder platform</p>
           </div>
 
           <Card className="shadow-lg">

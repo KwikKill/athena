@@ -102,37 +102,111 @@ const chartTypes = [
 ]
 
 const transformationExamples = [
+  // 🔎 Navigation & extraction
   {
-    name: "Filter by Status",
+    name: "Find nested array",
+    expression: "$(data).find('items_list').get()",
+    description: "Access a nested array property by key",
+  },
+  {
+    name: "Get first item",
+    expression: "$(data).first().get()",
+    description: "Return the first element of the dataset",
+  },
+  {
+    name: "Get last item",
+    expression: "$(data).last().get()",
+    description: "Return the last element of the dataset",
+  },
+  {
+    name: "Limit results",
+    expression: "$(data).first(5).get()",
+    description: "Keep only the first 5 items",
+  },
+
+  // 🎯 Filtering
+  {
+    name: "Filter by exact match",
     expression: "$(data).filter('[status=active]').get()",
-    description: "Filter items where status equals 'active'",
+    description: "Keep only items with status = active",
   },
   {
-    name: "Sort by Date",
+    name: "Filter by nested field",
+    expression: "$(data).filter('[details.price>10]').get()",
+    description: "Keep items where nested price > 10",
+  },
+
+  // 📊 Sorting & ordering
+  {
+    name: "Sort ascending",
+    expression: "$(data).sort('name').get()",
+    description: "Sort items by 'name' field ascending",
+  },
+  {
+    name: "Sort descending",
     expression: "$(data).sort('created_at', 'desc').get()",
-    description: "Sort items by created_at in descending order",
+    description: "Sort items by 'created_at' descending",
+  },
+
+  // 📑 Projection
+  {
+    name: "Select specific fields",
+    expression: "$(data).select(['name', 'details.price']).get()",
+    description: "Return only chosen fields (supports nested paths)",
   },
   {
-    name: "Get Top 10",
-    expression: "$(data).sort('value', 'desc').first(10).get()",
-    description: "Get top 10 items by value",
+    name: "Select with alias",
+    expression: "$(data).select(['name', 'details.price as price']).get()",
+    description: "Rename selected fields with aliases",
+  },
+
+  // 📈 Aggregations
+  {
+    name: "Count items",
+    expression: "$(data).count()",
+    description: "Return the number of items",
   },
   {
-    name: "Sum Values",
+    name: "Sum field values",
     expression: "$(data).sum('amount')",
-    description: "Calculate sum of amount field",
+    description: "Sum the values of the 'amount' field",
   },
   {
-    name: "Group by Category",
+    name: "Average field",
+    expression: "$(data).avg('amount')",
+    description: "Calculate average of the 'amount' field",
+  },
+  {
+    name: "Min / Max",
+    expression: "$(data).min('score') / $(data).max('score')",
+    description: "Get the min or max value of a field",
+  },
+
+  // 🗂️ Grouping
+  {
+    name: "Group by category",
     expression: "$(data).groupBy('category')",
-    description: "Group items by category field",
+    description: "Group items by a field",
   },
   {
-    name: "Select Fields",
-    expression: "$(data).select(['name', 'value', 'date']).get()",
-    description: "Select only specific fields",
+    name: "Group by nested field",
+    expression: "$(data).groupBy('details.type')",
+    description: "Group items by nested property",
+  },
+
+  // 🔗 Chaining
+  {
+    name: "Filter + Sort + Limit",
+    expression: "$(data).filter('[status=active]').sort('score','desc').first(3).get()",
+    description: "Combine multiple operations in a single chain",
+  },
+  {
+    name: "Convert Object to Array",
+    expression: "$([data])",
+    description: "Wrap an object into an array so you can apply transformations like filter, map, or sort",
   },
 ]
+
 
 export function WidgetCreationDialog({
   open,

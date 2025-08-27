@@ -316,7 +316,7 @@ export function DashboardBuilder({ dashboard: initialDashboard, dataSources, isO
                 size="sm"
                 onClick={manualRefresh}
                 disabled={isRefreshing}
-                className="gap-1 sm:gap-2 bg-transparent"
+                className="gap-1 sm:gap-2 bg-transparent hover:text-primary"
               >
                 <RefreshCw className={`h-4 w-4 ${isRefreshing ? "animate-spin" : ""}`} />
                 <span className="hidden sm:inline">Refresh</span>
@@ -326,7 +326,7 @@ export function DashboardBuilder({ dashboard: initialDashboard, dataSources, isO
                 <>
                   <DropdownMenu>
                     <DropdownMenuTrigger asChild>
-                      <Button variant="outline" size="sm">
+                      <Button variant="outline" size="sm" className="hover:text-primary">
                         <MoreHorizontal className="h-4 w-4" />
                       </Button>
                     </DropdownMenuTrigger>
@@ -335,19 +335,21 @@ export function DashboardBuilder({ dashboard: initialDashboard, dataSources, isO
                         <Checkbox
                           checked={autoRefreshEnabled}
                           onCheckedChange={(checked) => setAutoRefreshEnabled(!!checked)}
-                          className="mr-2 border border-muted-foreground data-[state=checked]:border-primary h-4 w-4 rounded-sm data-[state=checked]:bg-primary flex items-center justify-center"
+                          className="mr-2 border border-muted-foreground data-[state=checked]:border-primary h-4 w-4 rounded-sm data-[state=checked]:bg-primary items-center justify-center"
                         >
-                          <svg
-                            className="h-3 w-3 text-white"
-                            viewBox="0 0 24 24"
-                            fill="none"
-                            stroke="currentColor"
-                            strokeWidth="3"
-                            strokeLinecap="round"
-                            strokeLinejoin="round"
-                          >
-                            <polyline points="20 6 9 17 4 12" />
-                          </svg>
+                          {autoRefreshEnabled && (
+                            <svg
+                              className="h-3 w-3 text-white"
+                              viewBox="0 0 24 24"
+                              fill="none"
+                              stroke="currentColor"
+                              strokeWidth="3"
+                              strokeLinecap="round"
+                              strokeLinejoin="round"
+                            >
+                              <polyline points="20 6 9 17 4 12" />
+                            </svg>
+                          )}
                         </Checkbox>
                         Auto-refresh
                       </DropdownMenuItem>
@@ -360,14 +362,14 @@ export function DashboardBuilder({ dashboard: initialDashboard, dataSources, isO
                     variant="outline"
                     size="sm"
                     onClick={() => setIsEditMode(!isEditMode)}
-                    className="gap-1 sm:gap-2"
+                    className="gap-1 sm:gap-2 hover:text-primary"
                   >
                     {isEditMode ? <EyeOff className="h-4 w-4" /> : <Settings className="h-4 w-4" />}
                     <span className="hidden sm:inline">{isEditMode ? "View" : "Edit"}</span>
                   </Button>
 
                   {isEditMode && (
-                    <Button size="sm" onClick={handleSave} disabled={isSaving} className="gap-1 sm:gap-2">
+                    <Button size="sm" onClick={handleSave} disabled={isSaving} className="gap-1 sm:gap-2 hover:text-primary">
                       <Save className="h-4 w-4" />
                       <span className="hidden sm:inline">{isSaving ? "Saving..." : "Save"}</span>
                     </Button>

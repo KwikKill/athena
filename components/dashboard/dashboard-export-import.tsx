@@ -135,11 +135,21 @@ export function DashboardExportImport({ dashboard, onImport }: DashboardExportIm
   return (
     <>
       <div className="flex gap-2">
-        <Button variant="outline" size="sm" onClick={() => setShowExportDialog(true)} className="gap-2">
+        <Button
+          variant="outline"
+          size="sm"
+          onClick={() => setShowExportDialog(true)}
+          className="gap-2 hover:text-primary"
+        >
           <Download className="h-4 w-4" />
           Export
         </Button>
-        <Button variant="outline" size="sm" onClick={() => setShowImportDialog(true)} className="gap-2">
+        <Button
+          variant="outline"
+          size="sm"
+          onClick={() => setShowImportDialog(true)}
+          className="gap-2 hover:text-primary"
+        >
           <Upload className="h-4 w-4" />
           Import
         </Button>

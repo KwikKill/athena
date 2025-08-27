@@ -132,7 +132,7 @@ export function WidgetRenderer({
             <Button
               size="sm"
               variant="secondary"
-              className="h-6 w-6 sm:h-7 sm:w-7 p-0"
+              className="h-6 w-6 sm:h-7 sm:w-7 p-0 bg-primary"
               onClick={() => onEdit?.(widget)}
             >
               <Edit className="h-2.5 w-2.5 sm:h-3 sm:w-3" />

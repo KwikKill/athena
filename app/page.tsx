@@ -1,6 +1,6 @@
 import { createClient } from "@/lib/supabase/server"
 import { Button } from "@/components/ui/button"
-import { BarChart3, Zap, Brain, Lightbulb, Target } from "lucide-react"
+import { BarChart3, Zap, Brain, Lightbulb, Target, Shield } from "lucide-react"
 import Link from "next/link"
 import { redirect } from "next/navigation"
 
@@ -21,9 +21,8 @@ export default async function HomePage() {
       <header className="border-b bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/60">
         <div className="flex h-16 items-center justify-between mx-auto container">
           <div className="flex items-center gap-3 text-primary">
-            <Brain className="h-8 w-8" />
+            <Shield className="h-8 w-8" />
             <span className="text-2xl font-bold font-sans">Athena</span>
-            <span className="text-sm text-muted-foreground font-serif hidden sm:block">Wisdom in Data</span>
           </div>
           <div className="flex items-center gap-4">
             <Link href="/auth/login">
@@ -42,18 +41,15 @@ export default async function HomePage() {
           <div className="mx-auto container max-w-4xl text-center">
             <div className="mb-8 flex justify-center">
               <div className="relative">
-                <Brain className="h-20 w-20 text-primary mx-auto mb-4" />
-                <div className="absolute -top-2 -right-2 w-6 h-6 bg-accent rounded-full flex items-center justify-center">
-                  <Lightbulb className="h-3 w-3 text-accent-foreground" />
-                </div>
+                <Shield className="h-20 w-20 text-primary mx-auto mb-4" />
               </div>
             </div>
             <h1 className="text-4xl font-bold tracking-tight sm:text-6xl font-sans text-balance">
               Transform data into <span className="text-primary">wisdom</span> with intelligent dashboards
             </h1>
             <p className="mt-6 text-lg leading-8 text-muted-foreground max-w-2xl mx-auto font-serif text-pretty">
-              Harness the power of Athena to create sophisticated dashboards that reveal insights, connect data sources,
-              and visualize your knowledge with the clarity of ancient wisdom.
+              This project is a grafana lite built for REST API data sources. Connect to any API, visualize data with
+              smart widgets, and share insights with ease.
             </p>
             <div className="mt-10 flex items-center justify-center gap-x-6">
               <Link href="/auth/signup">
@@ -71,18 +67,17 @@ export default async function HomePage() {
         </section>
 
         {/* Features Section */}
-        <section className="py-24 bg-card/50">
+        <section className="py-24 bg-card">
           <div className="mx-auto container max-w-4xl">
             <div className="text-center mb-16">
-              <h2 className="text-3xl font-bold font-sans mb-4">Wisdom-driven dashboard creation</h2>
+              <h2 className="text-3xl font-bold font-sans mb-4">custom dashboard creation</h2>
               <p className="text-muted-foreground font-serif max-w-2xl mx-auto">
-                Every feature designed to transform raw data into actionable intelligence, guided by the principles of
-                clarity, insight, and strategic thinking.
+                Build dashboards from any REST API in minutes.
               </p>
             </div>
             <div className="grid md:grid-cols-3 gap-8">
               <div className="text-center group">
-                <div className="mx-auto w-16 h-16 bg-primary/10 rounded-xl flex items-center justify-center mb-6 group-hover:bg-primary/20 transition-colors">
+                <div className="mx-auto w-16 h-16 bg-primary/10 rounded-xl flex items-center justify-center mb-6 group-hover:bg-accent/20 transition-colors">
                   <BarChart3 className="h-8 w-8 text-primary" />
                 </div>
                 <h3 className="text-xl font-semibold mb-3 font-sans">Intelligent Visualization</h3>
@@ -91,8 +86,8 @@ export default async function HomePage() {
                 </p>
               </div>
               <div className="text-center group">
-                <div className="mx-auto w-16 h-16 bg-accent/10 rounded-xl flex items-center justify-center mb-6 group-hover:bg-accent/20 transition-colors">
-                  <Zap className="h-8 w-8 text-accent-foreground" />
+                <div className="mx-auto w-16 h-16 bg-primary/10 rounded-xl flex items-center justify-center mb-6 group-hover:bg-accent/20 transition-colors">
+                  <Zap className="h-8 w-8 text-primary" />
                 </div>
                 <h3 className="text-xl font-semibold mb-3 font-sans">Smart Integration</h3>
                 <p className="text-muted-foreground font-serif">
@@ -100,8 +95,8 @@ export default async function HomePage() {
                 </p>
               </div>
               <div className="text-center group">
-                <div className="mx-auto w-16 h-16 bg-secondary/20 rounded-xl flex items-center justify-center mb-6 group-hover:bg-secondary/30 transition-colors">
-                  <Target className="h-8 w-8 text-secondary-foreground" />
+                <div className="mx-auto w-16 h-16 bg-primary/10 rounded-xl flex items-center justify-center mb-6 group-hover:bg-accent/20 transition-colors">
+                  <Target className="h-8 w-8 text-primary" />
                 </div>
                 <h3 className="text-xl font-semibold mb-3 font-sans">Strategic Insights</h3>
                 <p className="text-muted-foreground font-serif">
@@ -116,13 +111,15 @@ export default async function HomePage() {
       {/* Footer */}
       <footer className="border-t py-8 bg-card/30">
         <div className="mx-auto container text-center text-sm text-muted-foreground">
-          <div className="flex items-center justify-center gap-2 mb-2">
-            <Brain className="h-4 w-4" />
-            <span className="font-sans font-semibold">Athena</span>
+          <div className="flex items-center justify-center gap-2">
+            <p className="font-serif">
+              &copy; {new Date().getFullYear()}
+            </p>
+            <Shield className="h-4 w-4 text-primary" />
+            <p className="font-serif">
+              Athena By Gabriel Blaisot - KwikKill
+            </p>
           </div>
-          <p className="font-serif">
-            &copy; {new Date().getFullYear()} Athena Dashboard Builder - Wisdom in every insight
-          </p>
         </div>
       </footer>
     </div>

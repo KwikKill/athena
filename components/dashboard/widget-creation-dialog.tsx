@@ -256,8 +256,8 @@ export function WidgetCreationDialog({
                           return (
                             <div
                               key={type.value}
-                              className={`group relative cursor-pointer rounded-lg border p-4 hover:bg-accent hover:text-white ${
-                                field.value === type.value ? "border-primary bg-accent text-white" : "text-black"
+                              className={`group relative cursor-pointer rounded-lg border p-4 hover:bg-accent text-white ${
+                                field.value === type.value ? "border-accent bg-primary" : ""
                               }`}
                               onClick={() => field.onChange(type.value)}
                             >
@@ -467,7 +467,7 @@ export function WidgetCreationDialog({
                           {transformationExamples.map((example, index) => (
                             <div
                               key={index}
-                              className="flex items-start justify-between p-3 rounded-lg border hover:bg-accent cursor-pointer"
+                              className="flex items-start justify-between p-3 rounded-lg border hover:bg-accent group cursor-pointer"
                               onClick={() => insertExample(example.expression)}
                             >
                               <div className="space-y-1">
@@ -476,10 +476,10 @@ export function WidgetCreationDialog({
                                     {example.name}
                                   </Badge>
                                 </div>
-                                <code className="text-xs text-muted-foreground font-mono">{example.expression}</code>
-                                <p className="text-xs text-muted-foreground">{example.description}</p>
+                                <code className="text-xs text-muted-foreground font-mono group-hover:text-white">{example.expression}</code>
+                                <p className="text-xs text-muted-foreground group-hover:text-white">{example.description}</p>
                               </div>
-                              <Plus className="h-4 w-4 text-muted-foreground" />
+                              <Plus className="h-4 w-4 text-muted-foreground group-hover:text-white" />
                             </div>
                           ))}
                         </div>

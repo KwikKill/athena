@@ -34,8 +34,17 @@ export default function RootLayout({
 }>) {
   return (
     <html lang="en" suppressHydrationWarning>
+      <head>
+        <link rel="icon" href="/icon.svg" />
+        <meta name="viewport" content="width=device-width, initial-scale=1" />
+        <meta name="description" content="Build powerful dashboards with drag & drop. Transform your data with the wisdom of Athena." />
+        <meta name="keywords" content="dashboard, analytics, data visualization, REST API, widgets, charts, graphs, open source, Next.js, Supabase" />
+        <meta name="author" content="Gabriel Blaisot - KwikKill" />
+        <meta property="og:title" content="Athena - REST API Dashboard Builder" />
+        <meta property="og:description" content="Build powerful dashboards with drag & drop. Transform your data with the wisdom of Athena." />
+      </head>
       <body className={`font-sans ${inter.variable} ${manrope.variable}`}>
-        <ThemeProvider attribute="class" defaultTheme="light" enableSystem disableTransitionOnChange>
+        <ThemeProvider attribute="class" defaultTheme="dark" enableSystem disableTransitionOnChange>
           {children}
         </ThemeProvider>
       </body>

@@ -26,6 +26,34 @@ interface Dashboard {
   layout_config?: any
 }
 
+interface CompleteDashboard {
+  id: string
+  name: string
+  description: string | null
+  tags: string[]
+  is_public: boolean
+  is_template: boolean
+  version: number
+  created_at: string
+  updated_at: string
+  layout_config?: any
+  dashboard_widgets: Array<{
+    id: string
+    widget_type: string
+    title: string
+    config: Record<string, any>
+    position_x: number
+    position_y: number
+    width: number
+    height: number
+    data_sources: {
+      id: string
+      name: string
+      url: string
+    } | null
+  }>
+}
+
 interface DashboardsListProps {
   dashboards: Dashboard[]
   publicDashboards: Dashboard[]
@@ -88,18 +116,45 @@ export function DashboardsList({ dashboards, publicDashboards }: DashboardsListP
   const handleExport = async (dashboard: Dashboard) => {
     setIsLoading(dashboard.id)
     try {
+      // Get the latest dashboard data including widgets
+      const response = await fetch(`/api/dashboards/${dashboard.id}`, {
+        method: "GET",
+        headers: {
+          "Content-Type": "application/json",
+        },
+      })
+
+      if (!response.ok) {
+        throw new Error("Failed to fetch dashboard data")
+      }
+
+      const data = await response.json()
+      const dashboardData: CompleteDashboard = data.dashboard
+
+      if (!dashboardData) {
+        throw new Error("Dashboard data is empty")
+      }
+
       // Create export data structure
       const exportData = {
+        version: "1.0",
         dashboard: {
-          name: dashboard.name,
-          description: dashboard.description,
-          tags: dashboard.tags,
-          layout_config: dashboard.layout_config,
-          version: dashboard.version,
+          name: dashboardData.name,
+          description: dashboardData.description,
+          tags: dashboardData.tags,
+          layout_config: dashboardData.layout_config,
         },
-        widgets: [], // Will be populated with widget data
-        exportedAt: new Date().toISOString(),
-        exportVersion: "1.0",
+        widgets: dashboardData.dashboard_widgets.map((widget) => ({
+          widget_type: widget.widget_type,
+          title: widget.title,
+          config: widget.config,
+          position_x: widget.position_x,
+          position_y: widget.position_y,
+          width: widget.width,
+          height: widget.height,
+          data_source_name: widget.data_sources?.name || null,
+        })),
+        exported_at: new Date().toISOString(),
       }
 
       // Create and download the JSON file
@@ -130,8 +185,40 @@ export function DashboardsList({ dashboards, publicDashboards }: DashboardsListP
     }
   }
 
-  const handleDelete = (dashboardId: string) => {
-    // Add confirmation dialog and implement deletion logic here
+  const handleDelete = async (dashboard: Dashboard) => {
+    // confirmation dialog
+    if (confirm("Are you sure you want to delete this dashboard? This action cannot be undone.")) {
+      setIsLoading(dashboard.id)
+      try {
+        const response = await fetch(`/api/dashboards/${dashboard.id}/`, {
+          method: "DELETE",
+          headers: {
+            "Content-Type": "application/json",
+          },
+        })
+
+        const result = await response.json()
+
+        if (!response.ok) {
+          throw new Error(result.error || "Failed to delete dashboard")
+        }
+
+        toast({
+          title: "Dashboard deleted",
+          description: `"${dashboard.name}" has been successfully deleted.`,
+        })
+
+        router.refresh()
+      } catch (error) {
+        toast({
+          title: "Deletion failed",
+          description: error instanceof Error ? error.message : "Failed to delete dashboard",
+          variant: "destructive",
+        })
+      } finally {
+        setIsLoading(null)
+      }
+    }
   }
 
   return (
@@ -208,7 +295,7 @@ export function DashboardsList({ dashboards, publicDashboards }: DashboardsListP
                         <Download className="mr-2 h-4 w-4" />
                         {isLoading === dashboard.id ? "Exporting..." : "Export"}
                       </DropdownMenuItem>
-                      <DropdownMenuItem className="text-destructive" onClick={() => handleDelete(dashboard.id)}>
+                      <DropdownMenuItem className="text-destructive" onClick={() => handleDelete(dashboard)}>
                         <Trash2 className="mr-2 h-4 w-4" />
                         Delete
                       </DropdownMenuItem>

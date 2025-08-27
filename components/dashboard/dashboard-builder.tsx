@@ -403,9 +403,20 @@ export function DashboardBuilder({ dashboard: initialDashboard, dataSources, isO
           <Card className="border-dashed">
             <CardContent className="flex flex-col items-center justify-center py-8 sm:py-12">
               <div className="text-center space-y-4">
-                <div className="w-12 h-12 sm:w-16 sm:h-16 bg-primary/10 rounded-lg flex items-center justify-center mx-auto">
+                <Button
+                  className="w-12 h-12 sm:w-16 sm:h-16 bg-primary/10 rounded-lg flex items-center justify-center mx-auto"
+                  onClick={
+                    () => {
+                      if(isOwner) {
+                        setShowWidgetDialog(true)
+                        setIsEditMode(true)
+                      }
+                    }
+                  }
+                  disabled={!isOwner}
+                >
                   <Plus className="h-6 w-6 sm:h-8 sm:w-8 text-primary" />
-                </div>
+                </Button>
                 <div>
                   <h3 className="text-base sm:text-lg font-semibold mb-2">Empty Dashboard</h3>
                   <p className="text-muted-foreground text-sm max-w-sm">
@@ -414,7 +425,13 @@ export function DashboardBuilder({ dashboard: initialDashboard, dataSources, isO
                   </p>
                 </div>
                 {isOwner && isEditMode && (
-                  <Button className="gap-2" onClick={() => setShowWidgetDialog(true)}>
+                  <Button
+                    className="gap-2"
+                    onClick={() => {
+                      setShowWidgetDialog(true)
+                      setIsEditMode(true)
+                    }}
+                  >
                     <Plus className="h-4 w-4" />
                     Add Widget
                   </Button>

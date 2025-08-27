@@ -97,10 +97,6 @@ export async function GET(request: NextRequest, { params }: { params: Promise<{ 
     if (dataSource.query_params && Object.keys(dataSource.query_params).length > 0) {
       queryParams = new URLSearchParams(dataSource.query_params)
     }
-
-    // Set response type to json
-    queryParams.set("response_type", "json")
-
     url += `?${queryParams.toString()}`
 
     const response = await fetch(url, {

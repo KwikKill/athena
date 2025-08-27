@@ -96,8 +96,8 @@ export async function GET(request: NextRequest, { params }: { params: Promise<{ 
     let queryParams = new URLSearchParams()
     if (dataSource.query_params && Object.keys(dataSource.query_params).length > 0) {
       queryParams = new URLSearchParams(dataSource.query_params)
+      url += `?${queryParams.toString()}`
     }
-    url += `?${queryParams.toString()}`
 
     const response = await fetch(url, {
       method: "GET",

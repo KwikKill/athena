@@ -49,7 +49,27 @@ export function ChartWidget({ data, config }: ChartWidgetProps) {
             <CartesianGrid strokeDasharray="3 3" />
             <XAxis dataKey={xField} />
             <YAxis />
-            <Tooltip />
+            <Tooltip
+              contentStyle={{
+                background: "#222",
+                color: "#fff"
+              }}
+              labelStyle={{
+                color: "#fff"
+              }}
+              content={({ active, payload, label }) => {
+                if (active && payload && payload.length) {
+                  const data = payload[0].payload
+                  return (
+                    <div className="p-2 bg-gray-800 border border-gray-700 rounded flexl flex-col gap-3">
+                      <p className="text-md">{`${xField}: ${data[xField]}`}</p>
+                      <p className="text-sm text-gray-400">{`${yField}: ${data[yField]}`}</p>
+                    </div>
+                  )
+                }
+                return null
+              }}
+            />
             <Legend />
             <Line type="monotone" dataKey={yField} stroke="#8884d8" strokeWidth={2} />
           </LineChart>
@@ -61,7 +81,27 @@ export function ChartWidget({ data, config }: ChartWidgetProps) {
             <CartesianGrid strokeDasharray="3 3" />
             <XAxis dataKey={xField} />
             <YAxis />
-            <Tooltip />
+            <Tooltip
+              contentStyle={{
+                background: "#222",
+                color: "#fff"
+              }}
+              labelStyle={{
+                color: "#fff"
+              }}
+              content={({ active, payload, label }) => {
+                if (active && payload && payload.length) {
+                  const data = payload[0].payload
+                  return (
+                    <div className="p-2 bg-gray-800 border border-gray-700 rounded flexl flex-col gap-3">
+                      <p className="text-md">{`${xField}: ${data[xField]}`}</p>
+                      <p className="text-sm text-gray-400">{`${yField}: ${data[yField]}`}</p>
+                    </div>
+                  )
+                }
+                return null
+              }}
+            />
             <Legend />
             <Area type="monotone" dataKey={yField} stroke="#8884d8" fill="#8884d8" />
           </AreaChart>
@@ -73,7 +113,27 @@ export function ChartWidget({ data, config }: ChartWidgetProps) {
             <CartesianGrid strokeDasharray="3 3" />
             <XAxis dataKey={xField} />
             <YAxis />
-            <Tooltip />
+            <Tooltip
+              contentStyle={{
+                background: "#222",
+                color: "#fff"
+              }}
+              labelStyle={{
+                color: "#fff"
+              }}
+              content={({ active, payload, label }) => {
+                if (active && payload && payload.length) {
+                  const data = payload[0].payload
+                  return (
+                    <div className="p-2 bg-gray-800 border border-gray-700 rounded flexl flex-col gap-3">
+                      <p className="text-md">{`${xField}: ${data[xField]}`}</p>
+                      <p className="text-sm text-gray-400">{`${yField}: ${data[yField]}`}</p>
+                    </div>
+                  )
+                }
+                return null
+              }}
+            />
             <Legend />
             <Bar dataKey={yField} fill="#8884d8" />
           </BarChart>
@@ -97,7 +157,26 @@ export function ChartWidget({ data, config }: ChartWidgetProps) {
                 <Cell key={`cell-${index}`} fill={COLORS[index % COLORS.length]} />
               ))}
             </Pie>
-            <Tooltip />
+            <Tooltip
+              contentStyle={{
+                background: "#222",
+                color: "#fff"
+              }}
+              labelStyle={{
+                color: "#fff"
+              }}
+              content={({ active, payload }) => {
+                if (active && payload && payload.length) {
+                  const data = payload[0].payload
+                  return (
+                    <div className="p-2 bg-gray-800 border border-gray-700 rounded">
+                      <p className="text-sm">{`${data[xField]} : ${data[yField]}`}</p>
+                    </div>
+                  )
+                }
+                return null
+              }}
+            />
           </PieChart>
         )
 

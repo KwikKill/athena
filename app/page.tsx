@@ -117,8 +117,16 @@ export default async function HomePage() {
             </p>
             <Shield className="h-4 w-4 text-primary" />
             <p className="font-serif">
-              Athena By Gabriel Blaisot - KwikKill
+              Athena By
             </p>
+            <a
+              href="https://gabriel.blaisot.org"
+              target="_blank"
+              rel="noopener noreferrer"
+              className="font-serif underline text-primary transition-colors hover:text-primary/70"
+            >
+              Gabriel Blaisot - KwikKill
+            </a>
           </div>
         </div>
       </footer>

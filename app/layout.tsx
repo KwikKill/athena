@@ -3,6 +3,7 @@ import type { Metadata } from "next"
 import { Inter, Manrope } from "next/font/google"
 import "./globals.css"
 import { ThemeProvider } from "@/components/theme-provider"
+import { Toaster } from "@/components/ui/toaster"
 
 const inter = Inter({
   subsets: ["latin"],
@@ -20,7 +21,7 @@ export const metadata: Metadata = {
   title: "Athena - REST API Dashboard Builder",
   description: "Build powerful dashboards with drag & drop. Transform your data with the wisdom of Athena.",
   authors: [
-    { 
+    {
       name: "Gabriel Blaisot - KwikKill",
       url: "https://gabriel.blaisot.org",
     }
@@ -46,6 +47,7 @@ export default function RootLayout({
       <body className={`font-sans ${inter.variable} ${manrope.variable}`}>
         <ThemeProvider attribute="class" defaultTheme="dark" enableSystem disableTransitionOnChange>
           {children}
+          <Toaster />
         </ThemeProvider>
       </body>
     </html>

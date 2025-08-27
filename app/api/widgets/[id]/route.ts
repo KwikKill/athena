@@ -47,6 +47,11 @@ export async function PUT(request: NextRequest, { params }: { params: Promise<{ 
       data_source_id = null
     }
 
+    // if type is text or iframe, remove data_source_id
+    if (widget_type === "text" || widget_type === "iframe") {
+      data_source_id = null
+    }
+
     // Update the widget
     const { data: updatedWidget, error } = await supabase
       .from("dashboard_widgets")

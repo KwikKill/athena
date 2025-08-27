@@ -39,6 +39,11 @@ export async function POST(request: NextRequest) {
       data_source_id = null
     }
 
+    // if type is text or iframe, remove data_source_id
+    if (widget_type === "text" || widget_type === "iframe") {
+      data_source_id = null
+    }
+
     // Create the widget
     const { data: widget, error } = await supabase
       .from("dashboard_widgets")

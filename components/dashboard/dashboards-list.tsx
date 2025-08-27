@@ -366,7 +366,7 @@ export function DashboardsList({ dashboards, publicDashboards }: DashboardsListP
             <LayoutDashboard className="h-12 w-12 text-muted-foreground mb-4" />
             <h3 className="text-lg font-semibold mb-2">No public dashboards yet</h3>
             <p className="text-muted-foreground text-center mb-4 max-w-sm">
-              Create a public dashboard to share with others. Public dashboards can be viewed by anyone with the link.
+              Create a public dashboard to share with others. Public dashboards can be viewed by anyone.
             </p>
           </CardContent>
         </Card>

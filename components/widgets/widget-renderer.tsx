@@ -116,7 +116,7 @@ export function WidgetRenderer({
 
   return (
     <Card
-      className={`relative group h-full widget-content overflow-hidden ${widget.widget_type === "kpi" ? "py-0" : ""}`}
+      className={`relative group h-full widget-content overflow-hidden flex ${widget.widget_type === "kpi" ? "py-0" : ""}`}
     >
       {isEditMode && (
         <div className="absolute top-1 left-1 sm:top-2 sm:left-2 opacity-0 group-hover:opacity-100 transition-opacity z-10">
@@ -174,7 +174,7 @@ export function WidgetRenderer({
           )}
         </CardHeader>
       )}
-      <CardContent className="pt-0 h-full overflow-auto widget-interract">
+      <CardContent className="pt-0 flex-1 overflow-auto widget-interract">
         <div className="h-full">{renderWidgetContent()}</div>
       </CardContent>
     </Card>

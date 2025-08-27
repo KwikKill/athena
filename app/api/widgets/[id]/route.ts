@@ -15,7 +15,7 @@ export async function PUT(request: NextRequest, { params }: { params: Promise<{ 
     }
 
     const body = await request.json()
-    const { widget_type, title, data_source_id, config, position_x, position_y, width, height } = body
+    let { widget_type, title, data_source_id, config, position_x, position_y, width, height } = body
 
     // Verify user owns the widget through dashboard ownership
     const { data: widget } = await supabase
@@ -29,6 +29,22 @@ export async function PUT(request: NextRequest, { params }: { params: Promise<{ 
 
     if (!widget || widget.dashboards.user_id !== user.id) {
       return NextResponse.json({ error: "Widget not found or unauthorized" }, { status: 404 })
+    }
+
+    // if data_source_id is provided, verify it exists
+    if (data_source_id && data_source_id !== null && data_source_id !== "") {
+      const { data: dataSource } = await supabase
+        .from("data_sources")
+        .select("id")
+        .eq("id", data_source_id)
+        .single()
+
+      if (!dataSource) {
+        return NextResponse.json({ error: "Data source not found" }, { status: 404 })
+      }
+    } else if (data_source_id === "") {
+      // If data_source_id is not provided, set it to null
+      data_source_id = null
     }
 
     // Update the widget

@@ -18,7 +18,7 @@ export function TextWidget({ config }: TextWidgetProps) {
   }
 
   return (
-    <div className="h-32 overflow-y-auto">
+    <div className="h-full overflow-y-auto">
       <div className="prose prose-sm max-w-none" dangerouslySetInnerHTML={{ __html: formatContent(content) }} />
     </div>
   )

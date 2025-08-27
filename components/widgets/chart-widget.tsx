@@ -107,7 +107,7 @@ export function ChartWidget({ data, config }: ChartWidgetProps) {
   }
 
   return (
-    <div className="h-64">
+    <div className="h-full">
       <ResponsiveContainer width="100%" height="100%" className="widget-interract">
         {renderChart()}
       </ResponsiveContainer>

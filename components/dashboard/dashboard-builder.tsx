@@ -67,6 +67,7 @@ export function DashboardBuilder({ dashboard: initialDashboard, dataSources, isO
   const [dashboard, setDashboard] = useState(initialDashboard)
   const [isEditMode, setIsEditMode] = useState(false)
   const [isSaving, setIsSaving] = useState(false)
+  const [hasUnsavedChanges, setHasUnsavedChanges] = useState(false)
   const [showWidgetDialog, setShowWidgetDialog] = useState(false)
   const [autoRefreshEnabled, setAutoRefreshEnabled] = useState(false)
   const [refreshInterval, setRefreshInterval] = useState(30000) // 30 seconds
@@ -150,6 +151,8 @@ export function DashboardBuilder({ dashboard: initialDashboard, dataSources, isO
         ),
       )
 
+      setHasUnsavedChanges(false)
+
       toast({
         title: "Dashboard Saved",
         description: "Your dashboard changes have been saved successfully.",
@@ -189,6 +192,8 @@ export function DashboardBuilder({ dashboard: initialDashboard, dataSources, isO
         dashboard_widgets: prev.dashboard_widgets.filter((w) => w.id !== widgetId),
       }))
 
+      setHasUnsavedChanges(true)
+
       toast({
         title: "Widget Deleted",
         description: "Widget has been removed from the dashboard.",
@@ -223,6 +228,7 @@ export function DashboardBuilder({ dashboard: initialDashboard, dataSources, isO
   const handleEditWidget = (widget: any) => {
     setEditingWidget(widget)
     setShowWidgetDialog(true)
+    setHasUnsavedChanges(true)
   }
 
   const handleWidgetUpdated = (updatedWidget: any) => {
@@ -235,6 +241,8 @@ export function DashboardBuilder({ dashboard: initialDashboard, dataSources, isO
     setTimeout(() => {
       refreshSingleWidget(updatedWidget.id)
     }, 100) // Small delay to ensure state update is complete
+
+    setHasUnsavedChanges(true)
 
     toast({
       title: "Widget Updated",
@@ -270,12 +278,21 @@ export function DashboardBuilder({ dashboard: initialDashboard, dataSources, isO
       <div className="border-b bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/60">
         <div className="mx-2 sm:mx-4 flex min-h-16 py-2 items-center justify-between">
           <div className="flex items-center gap-2 sm:gap-4 min-w-0 flex-1">
-            <Link href="/dashboard">
-              <Button variant="ghost" size="sm" className="gap-2 flex-shrink-0">
-                <ArrowLeft className="h-4 w-4" />
-                <span className="hidden sm:inline">Back</span>
-              </Button>
-            </Link>
+            <Button
+              variant="ghost"
+              size="sm"
+              className="gap-2 flex-shrink-0"
+              onClick={() => {
+                  if (!hasUnsavedChanges || confirm("You have unsaved changes. Are you sure you want to leave?")) {
+                    router.push("/dashboard")
+
+                  }
+                }
+              }
+            >
+              <ArrowLeft className="h-4 w-4" />
+              <span className="hidden sm:inline">Back</span>
+            </Button>
             <div className="min-w-0 flex-1">
               <h1 className="text-lg sm:text-xl font-semibold truncate">{dashboard.name}</h1>
               {dashboard.description && (
